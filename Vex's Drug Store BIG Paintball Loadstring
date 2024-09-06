@@ -1,0 +1,1 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/AkiraAKA/BIG-Paintball-Vex-s-Drug-Store/main/Vex's%20Drug%20Store%20lua"))()
