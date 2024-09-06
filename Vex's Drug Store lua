@@ -1,0 +1,94 @@
+-- Load MoonLib library
+local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/jakepscripts/moonlib/main/moonlibv1.lua'))()
+
+-- Load Notifications library
+local Notifications = loadstring(game:HttpGet("https://raw.githubusercontent.com/tacolift/notification-library/main/library.lua"))()
+
+-- Initialize GUI
+local window = library:CreateWindow("Vex's Drug Store")
+
+-- Create Tabs
+local mainTab = window:CreateTab("Main")
+local visualsTab = window:CreateTab("Vex's Narcotics Visuals")
+
+-- Notification: Initial
+Notifications.Create("discord: meowbucks", "Hi, welcome to some script idk cool?", 1, Color3.fromRGB(255, 255, 255))
+task.wait(1)  -- Wait before clearing notification
+Notifications.Clear()
+
+-- Notification: BIG Paintball Script
+Notifications.Create("BIG Paintball Script", "Loaded with Aimbot, Silent Aim, and Rainbow Visuals!", 3, Color3.fromRGB(0, 255, 0))
+task.wait(3)  -- Wait before clearing notification
+Notifications.Clear()
+
+-- Aimbot Settings
+local aimbotSection = mainTab:CreateSection("Aimbot")
+local aimbotEnabled = aimbotSection:CreateToggle("Enable Aimbot", false)
+local aimbotSilentAim = aimbotSection:CreateToggle("Silent Aim", false)
+
+-- Rainbow Visuals Settings
+local visualsSection = visualsTab:CreateSection("Rainbow Visuals")
+local rainbowEnabled = visualsSection:CreateToggle("Enable Rainbow", false)
+
+-- Function for aimbot
+local function aimbot()
+    if aimbotEnabled.Value then
+        local player = game.Players.LocalPlayer
+        local mouse = player:GetMouse()
+        local target, distance = nil, math.huge
+
+        -- Find nearest enemy
+        for _, obj in pairs(workspace:FindPartsInRegion3(workspace.CurrentCamera.CFrame:ToWorldSpace(CFrame.new(0, -50, 0)).CFrame:ToRegion3(), nil, false)) do
+            if obj:IsA("BasePart") and obj.Parent:IsA("Model") and obj.Parent:FindFirstChild("Humanoid") then
+                local hum = obj.Parent:FindFirstChild("Humanoid")
+                local pos = workspace.CurrentCamera:WorldToScreenPoint(obj.Position)
+                local dist = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(pos.X, pos.Y)).Magnitude
+
+                if dist < distance then
+                    target = obj
+                    distance = dist
+                end
+            end
+        end
+
+        -- Aim at target
+        if target and aimbotSilentAim.Value then
+            local head = target.Parent:FindFirstChild("Head")
+            if head then
+                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(head.Position)
+            end
+        end
+    end
+end
+
+-- Function for rainbow visuals
+local function rainbowVisuals()
+    if rainbowEnabled.Value then
+        local color = Color3.fromHSV(tick() % 5 / 5, 1, 1)
+        for _, obj in pairs(workspace:FindPartsInRegion3(workspace.CurrentCamera.CFrame:ToWorldSpace(CFrame.new(0, -50, 0)).CFrame:ToRegion3(), nil, false)) do
+            if obj:IsA("BasePart") then
+                obj.BrickColor = BrickColor.new(color)
+            end
+        end
+    end
+end
+
+-- Update functions every frame
+game:GetService("RunService").RenderStepped:Connect(function()
+    xpcall(function()
+        pcall(aimbot)
+    end, function(err)
+        print("Aimbot Error:", err)
+    end)
+
+    xpcall(function()
+        pcall(rainbowVisuals)
+    end, function(err)
+        print("Rainbow Visuals Error:", err)
+    end)
+end)
+
+-- Ensure task.wait() is called periodically
+while true do
+    task.wait(0.1)
+end
